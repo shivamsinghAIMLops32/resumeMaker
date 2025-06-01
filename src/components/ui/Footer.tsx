@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
             transition={{ delay: 0.4, duration: 0.5 }}
           >
             <a 
-              href="https://github.com/yourusername" 
+              href="https://github.com/shivamsinghAIMLops32/resumeMaker" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
               <Twitter size={20} />
             </a>
             <a 
-              href="mailto:you@example.com" 
+              href="mailto:shivamsinghcse19@gmail.com" 
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
               aria-label="Email"
             >
@@ -62,7 +62,7 @@ const Footer: React.FC = () => {
         
         <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Made with <span className="text-red-500">❤️</span> by ResumeForge Team &copy; {new Date().getFullYear()}
+            Made with <span className="text-red-500">❤️</span> by ResumeForge  &copy; {new Date().getFullYear()}
           </p>
         </div>
       </div>

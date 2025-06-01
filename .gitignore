@@ -1,3 +1,4 @@
+.bolt
 # Logs
 logs
 *.log
@@ -24,4 +25,3 @@ dist-ssr
 *.sw?
 .env
 
-.bolt
