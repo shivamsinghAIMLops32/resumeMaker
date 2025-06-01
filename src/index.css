@@ -8,11 +8,55 @@
   }
 
   body {
-    @apply text-gray-800 dark:text-gray-200;
+    @apply text-gray-800 dark:text-gray-200 transition-colors duration-200;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold leading-tight;
+  }
+
+  .dark .dark-theme-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  .dark .dark-theme-sparkle {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dark .dark-theme-sparkle::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 10%,
+      transparent 10.5%
+    ) 0 0/5px 5px;
+    animation: sparkle 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  @keyframes sparkle {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
   
   /* Print styles */
@@ -46,45 +90,57 @@
   }
 
   .form-label {
-    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200;
   }
 
   .form-input {
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm 
     focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 
-    bg-white dark:bg-gray-700 dark:text-white text-sm;
+    bg-white dark:bg-gray-800 dark:text-white text-sm transition-all duration-200
+    hover:border-indigo-400 dark:hover:border-indigo-500;
   }
 
   .form-textarea {
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm 
     focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 
-    bg-white dark:bg-gray-700 dark:text-white text-sm;
+    bg-white dark:bg-gray-800 dark:text-white text-sm transition-all duration-200
+    hover:border-indigo-400 dark:hover:border-indigo-500;
   }
 
   .form-select {
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm 
     focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 
-    bg-white dark:bg-gray-700 dark:text-white text-sm;
+    bg-white dark:bg-gray-800 dark:text-white text-sm transition-all duration-200
+    hover:border-indigo-400 dark:hover:border-indigo-500;
   }
 
   .btn {
-    @apply px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 
-    focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 
+    focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
   }
 
   .btn-primary {
-    @apply bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500;
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-600 
+    focus:ring-indigo-500 transform hover:scale-105 active:scale-95;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 focus:ring-gray-500;
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 
+    dark:text-gray-200 focus:ring-gray-500 transform hover:scale-105 active:scale-95;
   }
 
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white focus:ring-red-500;
+    @apply bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 
+    transform hover:scale-105 active:scale-95;
   }
 
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4;
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4 transition-all duration-200
+    dark:shadow-lg dark:shadow-indigo-500/10 hover:shadow-lg dark:hover:shadow-xl
+    dark:hover:shadow-indigo-500/20;
+  }
+
+  .dark-theme-gradient {
+    @apply dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900;
   }
 }
