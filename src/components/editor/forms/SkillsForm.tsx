@@ -32,6 +32,15 @@ const SkillsForm: React.FC = () => {
     { value: 'other', label: 'Other' }
   ];
 
+  const skillsByCategory = skills.reduce((acc: Record<string, typeof skills>, skill) => {
+    const category = skill.category || 'Other';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(skill);
+    return acc;
+  }, {});
+
   return (
     <motion.div
       className="card"
@@ -39,7 +48,7 @@ const SkillsForm: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h3 className="text-lg font-medium mb-4">Skills</h3>
+      <h3 className="text-lg font-medium mb-4 text-gray-800 dark:text-gray-200">Skills</h3>
       
       <div className="grid grid-cols-12 gap-2 mb-4">
         <div className="col-span-5">
@@ -76,7 +85,7 @@ const SkillsForm: React.FC = () => {
                 <Star
                   key={star}
                   size={16}
-                  className={`cursor-pointer ${
+                  className={`cursor-pointer transition-colors ${
                     star <= level 
                       ? 'fill-amber-400 text-amber-400' 
                       : 'text-gray-300 dark:text-gray-600'
@@ -97,54 +106,59 @@ const SkillsForm: React.FC = () => {
       </div>
       
       <div>
-        <h4 className="text-sm font-medium mb-2">Your Skills:</h4>
-        <div className="flex flex-wrap gap-2">
-          <AnimatePresence>
-            {skills.length > 0 ? (
-              skills.map((skill) => (
-                <motion.div 
-                  key={skill.id}
-                  className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-md px-2 py-1"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                >
-                  <span className="text-sm">{skill.name}</span>
-                  {skill.category && (
-                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                      ({skill.category})
-                    </span>
-                  )}
-                  <span className="mx-1 text-gray-300 dark:text-gray-600">|</span>
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={10}
-                        className={`${
-                          star <= skill.level 
-                            ? 'fill-amber-400 text-amber-400' 
-                            : 'text-gray-300 dark:text-gray-600'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => removeSkill(skill.id)}
-                    className="ml-1 text-red-500 hover:text-red-700"
-                    title="Remove Skill"
+        <h4 className="text-sm font-medium mb-2 text-gray-800 dark:text-gray-200">Your Skills:</h4>
+        <AnimatePresence>
+          {Object.entries(skillsByCategory).map(([category, skills]) => (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4"
+            >
+              <h5 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{category}</h5>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill) => (
+                  <motion.div 
+                    key={skill.id}
+                    className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-md px-2 py-1"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
                   >
-                    <Trash2 size={12} />
-                  </button>
-                </motion.div>
-              ))
-            ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 w-full text-center py-2">
-                No skills added yet. Add your first skill above.
-              </p>
-            )}
-          </AnimatePresence>
-        </div>
+                    <span className="text-sm text-gray-800 dark:text-gray-200">{skill.name}</span>
+                    <div className="flex items-center mx-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={10}
+                          className={`${
+                            star <= skill.level 
+                              ? 'fill-amber-400 text-amber-400' 
+                              : 'text-gray-300 dark:text-gray-600'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => removeSkill(skill.id)}
+                      className="ml-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                      title="Remove Skill"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        
+        {skills.length === 0 && (
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+            No skills added yet. Add your first skill above.
+          </p>
+        )}
       </div>
     </motion.div>
   );

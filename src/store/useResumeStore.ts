@@ -21,7 +21,6 @@ export type ResumeLayout = 'modern' | 'classic' | 'minimal' | 'creative';
 
 export type SocialPlatform = 'linkedin' | 'github' | 'twitter' | 'leetcode' | 'hackerrank' | 'blog' | 'other';
 
-// Define individual section types
 export interface PersonalInfo {
   name: string;
   title: string;
@@ -42,7 +41,7 @@ export interface SocialLink {
 export interface Skill {
   id: string;
   name: string;
-  level: number; // 1-5
+  level: number;
   category?: string;
 }
 
@@ -118,9 +117,7 @@ export interface Contact {
   website: string;
 }
 
-// Define the resume state
 export interface ResumeState {
-  // Theme and layout
   darkMode: boolean;
   toggleDarkMode: () => void;
   
@@ -129,12 +126,13 @@ export interface ResumeState {
   
   accentColor: string;
   setAccentColor: (color: string) => void;
+
+  backgroundColor: string;
+  setBackgroundColor: (color: string) => void;
   
-  // Section visibility toggles
   visibleSections: Record<ResumeSection, boolean>;
   toggleSection: (section: ResumeSection) => void;
   
-  // Resume data
   personalInfo: PersonalInfo;
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   
@@ -186,12 +184,10 @@ export interface ResumeState {
   updatePublication: (id: string, data: Partial<Publication>) => void;
   removePublication: (id: string) => void;
   
-  // Export/Import
   exportData: () => string;
   importData: (jsonData: string) => void;
 }
 
-// Initial state values
 const initialPersonalInfo: PersonalInfo = {
   name: '',
   title: '',
@@ -202,21 +198,21 @@ const initialPersonalInfo: PersonalInfo = {
   website: '',
 };
 
-// Create the store
 const useResumeStore = create<ResumeState>()(
   persist(
     (set) => ({
-      // Theme and layout
       darkMode: false,
       toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
       
       layout: 'modern',
       setLayout: (layout) => set({ layout }),
       
-      accentColor: '#4f46e5', // Default indigo color
+      accentColor: '#4f46e5',
       setAccentColor: (color) => set({ accentColor: color }),
+
+      backgroundColor: '#ffffff',
+      setBackgroundColor: (color) => set({ backgroundColor: color }),
       
-      // Section visibility toggles
       visibleSections: {
         personalInfo: true,
         socialLinks: true,
@@ -240,7 +236,6 @@ const useResumeStore = create<ResumeState>()(
           },
         })),
       
-      // Resume data
       personalInfo: initialPersonalInfo,
       updatePersonalInfo: (info) => 
         set((state) => ({
@@ -421,12 +416,12 @@ const useResumeStore = create<ResumeState>()(
           publications: state.publications.filter((pub) => pub.id !== id),
         })),
       
-      // Export/Import
       exportData: () => {
         const state = useResumeStore.getState();
         const data = {
           layout: state.layout,
           accentColor: state.accentColor,
+          backgroundColor: state.backgroundColor,
           visibleSections: state.visibleSections,
           personalInfo: state.personalInfo,
           socialLinks: state.socialLinks,
@@ -448,6 +443,7 @@ const useResumeStore = create<ResumeState>()(
           set({
             layout: data.layout || 'modern',
             accentColor: data.accentColor || '#4f46e5',
+            backgroundColor: data.backgroundColor || '#ffffff',
             visibleSections: data.visibleSections || {},
             personalInfo: data.personalInfo || initialPersonalInfo,
             socialLinks: data.socialLinks || [],
