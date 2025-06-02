@@ -98,3 +98,5 @@ const LayoutSelector: React.FC = () => {
     </div>
   );
 };
+
+export default LayoutSelector
