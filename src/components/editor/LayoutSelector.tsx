@@ -33,7 +33,7 @@ const LayoutSelector: React.FC = () => {
   ];
 
   return (
-    <div>
+    <div className="text-gray-800 dark:text-gray-200">
       <div className="mb-4">
         <label className="form-label">Choose Template</label>
         <div className="grid grid-cols-2 gap-2">
@@ -43,10 +43,10 @@ const LayoutSelector: React.FC = () => {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               className={`
-                p-2 rounded-md border cursor-pointer text-center
+                p-2 rounded-md border cursor-pointer text-center transition-colors
                 ${layout === id 
                   ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300' 
-                  : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50'}
+                  : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50 text-gray-800 dark:text-gray-200'}
               `}
               onClick={() => setLayout(id)}
             >
@@ -85,7 +85,7 @@ const LayoutSelector: React.FC = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               className={`
-                w-8 h-8 rounded-full cursor-pointer border border-gray-200
+                w-8 h-8 rounded-full cursor-pointer border border-gray-200 dark:border-gray-600
                 ${backgroundColor === value ? 'ring-2 ring-offset-2 dark:ring-offset-gray-800 ring-gray-700' : ''}
               `}
               style={{ backgroundColor: value }}
@@ -99,4 +99,4 @@ const LayoutSelector: React.FC = () => {
   );
 };
 
-export default LayoutSelector
+export default LayoutSelector;
