@@ -27,7 +27,8 @@ const ModernLayout: React.FC = () => {
     languages, 
     publications,
     visibleSections,
-    accentColor
+    accentColor,
+    backgroundColor
   } = useResumeStore();
 
   const formatDate = (dateString: string) => {
@@ -39,8 +40,33 @@ const ModernLayout: React.FC = () => {
     }).format(date);
   };
 
+  const getSocialIcon = (platform: string) => {
+    switch (platform) {
+      case 'linkedin': return <Linkedin size={16} className="mr-1" />;
+      case 'github': return <Github size={16} className="mr-1" />;
+      case 'twitter': return <Twitter size={16} className="mr-1" />;
+      case 'leetcode': return <Code size={16} className="mr-1" />;
+      case 'hackerrank': return <Code size={16} className="mr-1" />;
+      case 'blog': return <Globe size={16} className="mr-1" />;
+      default: return <ExternalLink size={16} className="mr-1" />;
+    }
+  };
+
+  // Group skills by category
+  const skillsByCategory = skills.reduce((categories: Record<string, typeof skills>, skill) => {
+    const category = skill.category || 'Other';
+    if (!categories[category]) {
+      categories[category] = [];
+    }
+    categories[category].push(skill);
+    return categories;
+  }, {});
+
   return (
-    <div className="font-sans text-gray-900 p-8 print:p-6">
+    <div 
+      className="font-sans text-gray-900 p-8 print:p-6 min-h-full"
+      style={{ backgroundColor }}
+    >
       {/* Header */}
       <header style={{ color: accentColor }}>
         <motion.h1 
@@ -61,7 +87,7 @@ const ModernLayout: React.FC = () => {
         </motion.h2>
         
         <motion.div 
-          className="flex flex-wrap items-center gap-4 text-sm mb-6"
+          className="flex flex-wrap items-center gap-4 text-sm mb-6 text-gray-700"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -88,6 +114,7 @@ const ModernLayout: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline"
+                style={{ color: accentColor }}
               >
                 {personalInfo.website.replace(/^https?:\/\//, '')}
               </a>
@@ -116,13 +143,9 @@ const ModernLayout: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center hover:underline"
+                style={{ color: accentColor }}
               >
-                {link.platform === 'linkedin' && <Linkedin size={16} className="mr-1" />}
-                {link.platform === 'github' && <Github size={16} className="mr-1" />}
-                {link.platform === 'twitter' && <Twitter size={16} className="mr-1" />}
-                {(link.platform === 'leetcode' || link.platform === 'hackerrank') && <Code size={16} className="mr-1" />}
-                {link.platform === 'blog' && <Globe size={16} className="mr-1" />}
-                {link.platform === 'other' && <ExternalLink size={16} className="mr-1" />}
+                {getSocialIcon(link.platform)}
                 <span>{link.username || link.url.replace(/^https?:\/\//, '')}</span>
               </a>
             ))}
@@ -138,7 +161,7 @@ const ModernLayout: React.FC = () => {
           <h3 className="text-lg font-semibold mb-2" style={{ color: accentColor }}>
             About
           </h3>
-          <p className="text-sm leading-relaxed">{about}</p>
+          <p className="text-sm leading-relaxed text-gray-700">{about}</p>
         </section>
       )}
       
@@ -148,18 +171,25 @@ const ModernLayout: React.FC = () => {
           <h3 className="text-lg font-semibold mb-2" style={{ color: accentColor }}>
             Skills
           </h3>
-          <div className="flex flex-wrap gap-2">
-            {skills.map((skill) => (
-              <div 
-                key={skill.id}
-                className="px-3 py-1 rounded-full bg-gray-100 text-xs"
-              >
-                {skill.name}
-                {skill.level > 0 && (
-                  <span className="ml-1 text-gray-400">
-                    {Array.from({ length: skill.level }).map((_, i) => '•').join('')}
-                  </span>
-                )}
+          <div className="space-y-3">
+            {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
+              <div key={category}>
+                <h4 className="text-sm font-medium mb-2 text-gray-800">{category}</h4>
+                <div className="flex flex-wrap gap-2">
+                  {categorySkills.map((skill) => (
+                    <div 
+                      key={skill.id}
+                      className="px-3 py-1 rounded-full bg-gray-100 text-xs text-gray-800"
+                    >
+                      {skill.name}
+                      {skill.level > 0 && (
+                        <span className="ml-1 text-gray-400">
+                          {Array.from({ length: skill.level }).map((_, i) => '•').join('')}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -177,7 +207,7 @@ const ModernLayout: React.FC = () => {
               <div key={exp.id}>
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">{exp.role}</h4>
+                    <h4 className="font-medium text-gray-800">{exp.role}</h4>
                     <div className="text-sm text-gray-600">{exp.company}</div>
                   </div>
                   <div className="text-sm text-gray-600">
@@ -187,7 +217,7 @@ const ModernLayout: React.FC = () => {
                 </div>
                 
                 {exp.responsibilities.length > 0 && (
-                  <ul className="mt-2 text-sm list-disc list-inside space-y-1">
+                  <ul className="mt-2 text-sm list-disc list-inside space-y-1 text-gray-700">
                     {exp.responsibilities.map((responsibility, index) => (
                       <li key={index}>{responsibility}</li>
                     ))}
@@ -199,7 +229,7 @@ const ModernLayout: React.FC = () => {
                     {exp.techUsed.map((tech, index) => (
                       <span 
                         key={index}
-                        className="text-xs bg-gray-100 px-2 py-0.5 rounded"
+                        className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-700"
                       >
                         {tech}
                       </span>
@@ -223,7 +253,7 @@ const ModernLayout: React.FC = () => {
               <div key={edu.id}>
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">{edu.degree}</h4>
+                    <h4 className="font-medium text-gray-800">{edu.degree}</h4>
                     <div className="text-sm text-gray-600">{edu.institution}</div>
                   </div>
                   <div className="text-sm text-gray-600">
@@ -233,13 +263,13 @@ const ModernLayout: React.FC = () => {
                 </div>
                 
                 {edu.gpa && (
-                  <div className="mt-1 text-sm">
+                  <div className="mt-1 text-sm text-gray-700">
                     <span className="font-medium">GPA:</span> {edu.gpa}
                   </div>
                 )}
                 
                 {edu.coursework && (
-                  <div className="mt-1 text-sm">
+                  <div className="mt-1 text-sm text-gray-700">
                     <span className="font-medium">Relevant Coursework:</span> {edu.coursework}
                   </div>
                 )}
@@ -260,7 +290,7 @@ const ModernLayout: React.FC = () => {
               <div key={project.id}>
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">{project.title}</h4>
+                    <h4 className="font-medium text-gray-800">{project.title}</h4>
                     {project.techUsed.length > 0 && (
                       <div className="text-sm text-gray-600">
                         {project.techUsed.join(', ')}
@@ -275,7 +305,7 @@ const ModernLayout: React.FC = () => {
                 </div>
                 
                 {project.description && (
-                  <p className="mt-1 text-sm">{project.description}</p>
+                  <p className="mt-1 text-sm text-gray-700">{project.description}</p>
                 )}
                 
                 <div className="mt-1 flex space-x-3 text-sm">
@@ -319,7 +349,7 @@ const ModernLayout: React.FC = () => {
             {achievements.map((achievement) => (
               <li key={achievement.id} className="text-sm">
                 <div className="flex justify-between">
-                  <span className="font-medium">{achievement.title}</span>
+                  <span className="font-medium text-gray-800">{achievement.title}</span>
                   {achievement.date && <span className="text-gray-600">{formatDate(achievement.date)}</span>}
                 </div>
                 {achievement.description && <p className="text-gray-700">{achievement.description}</p>}
@@ -337,7 +367,7 @@ const ModernLayout: React.FC = () => {
           </h3>
           <div className="flex flex-wrap gap-4">
             {languages.map((language) => (
-              <div key={language.id} className="text-sm">
+              <div key={language.id} className="text-sm text-gray-700">
                 <span className="font-medium">{language.name}:</span> {language.proficiency}
               </div>
             ))}
@@ -355,7 +385,7 @@ const ModernLayout: React.FC = () => {
             {courses.map((course) => (
               <li key={course.id} className="text-sm">
                 <div className="flex justify-between">
-                  <span className="font-medium">{course.name}</span>
+                  <span className="font-medium text-gray-800">{course.name}</span>
                   {course.date && <span className="text-gray-600">{formatDate(course.date)}</span>}
                 </div>
                 <div className="text-gray-600">{course.provider}</div>
@@ -375,7 +405,7 @@ const ModernLayout: React.FC = () => {
           <ul className="space-y-3">
             {publications.map((publication) => (
               <li key={publication.id} className="text-sm">
-                <div className="font-medium">{publication.title}</div>
+                <div className="font-medium text-gray-800">{publication.title}</div>
                 {publication.authors && <div className="text-gray-700">{publication.authors}</div>}
                 <div className="text-gray-600">
                   {publication.journal}

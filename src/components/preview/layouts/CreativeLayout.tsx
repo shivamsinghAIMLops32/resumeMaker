@@ -28,7 +28,8 @@ const CreativeLayout: React.FC = () => {
     languages, 
     publications,
     visibleSections,
-    accentColor
+    accentColor,
+    backgroundColor
   } = useResumeStore();
 
   const formatDate = (dateString: string) => {
@@ -40,8 +41,33 @@ const CreativeLayout: React.FC = () => {
     }).format(date);
   };
 
+  const getSocialIcon = (platform: string) => {
+    switch (platform) {
+      case 'linkedin': return <Linkedin size={14} className="mr-2 opacity-80" />;
+      case 'github': return <Github size={14} className="mr-2 opacity-80" />;
+      case 'twitter': return <Twitter size={14} className="mr-2 opacity-80" />;
+      case 'leetcode': return <Code size={14} className="mr-2 opacity-80" />;
+      case 'hackerrank': return <Code size={14} className="mr-2 opacity-80" />;
+      case 'blog': return <Globe size={14} className="mr-2 opacity-80" />;
+      default: return <ExternalLink size={14} className="mr-2 opacity-80" />;
+    }
+  };
+
+  // Group skills by category
+  const skillsByCategory = skills.reduce((categories: Record<string, typeof skills>, skill) => {
+    const category = skill.category || 'Other';
+    if (!categories[category]) {
+      categories[category] = [];
+    }
+    categories[category].push(skill);
+    return categories;
+  }, {});
+
   return (
-    <div className="font-sans flex flex-col md:flex-row print:flex-row">
+    <div 
+      className="font-sans flex flex-col md:flex-row print:flex-row min-h-full"
+      style={{ backgroundColor }}
+    >
       {/* Sidebar */}
       <div 
         className="md:w-1/3 print:w-1/3 p-8 print:p-4 text-white"
@@ -50,36 +76,39 @@ const CreativeLayout: React.FC = () => {
         {/* Photo and Name */}
         <div className="text-center mb-8">
           {personalInfo.photo ? (
-            <img 
-              src={personalInfo.photo} 
-              alt={personalInfo.name}
-              className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-white/30 object-cover"
-            />
+            <div className="w-32 h-32 mx-auto mb-4 relative">
+              <img 
+                src={personalInfo.photo} 
+                alt={personalInfo.name}
+                className="w-full h-full rounded-full border-4 border-white/30 object-cover"
+                style={{ aspectRatio: '1/1' }}
+              />
+            </div>
           ) : (
             <div className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-white/30 flex items-center justify-center bg-white/10 text-3xl font-bold">
-              {personalInfo.name ? personalInfo.name.charAt(0) : '?'}
+              {personalInfo.name ? personalInfo.name.charAt(0).toUpperCase() : '?'}
             </div>
           )}
           
-          <h1 className="text-2xl font-bold mb-1">
+          <h1 className="text-2xl font-bold mb-1 text-white">
             {personalInfo.name || 'Your Name'}
           </h1>
-          <h2 className="text-md opacity-90 mb-4">
+          <h2 className="text-md opacity-90 mb-4 text-white">
             {personalInfo.title || 'Professional Title'}
           </h2>
         </div>
         
         {/* Contact */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1">
+          <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1 text-white">
             Contact
           </h3>
           
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2 text-sm text-white">
             {personalInfo.email && (
               <div className="flex items-center">
                 <Mail size={14} className="mr-2 opacity-80" />
-                <span>{personalInfo.email}</span>
+                <span className="break-all">{personalInfo.email}</span>
               </div>
             )}
             
@@ -97,7 +126,7 @@ const CreativeLayout: React.FC = () => {
                   href={personalInfo.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:underline"
+                  className="hover:underline break-all text-white"
                 >
                   {personalInfo.website.replace(/^https?:\/\//, '')}
                 </a>
@@ -116,7 +145,7 @@ const CreativeLayout: React.FC = () => {
         {/* Social Links */}
         {visibleSections.socialLinks && socialLinks.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1">
+            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1 text-white">
               Connect
             </h3>
             
@@ -127,14 +156,9 @@ const CreativeLayout: React.FC = () => {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center hover:underline"
+                  className="flex items-center hover:underline text-white"
                 >
-                  {link.platform === 'linkedin' && <Linkedin size={14} className="mr-2 opacity-80" />}
-                  {link.platform === 'github' && <Github size={14} className="mr-2 opacity-80" />}
-                  {link.platform === 'twitter' && <Twitter size={14} className="mr-2 opacity-80" />}
-                  {(link.platform === 'leetcode' || link.platform === 'hackerrank') && <Code size={14} className="mr-2 opacity-80" />}
-                  {link.platform === 'blog' && <Globe size={14} className="mr-2 opacity-80" />}
-                  {link.platform === 'other' && <ExternalLink size={14} className="mr-2 opacity-80" />}
+                  {getSocialIcon(link.platform)}
                   <span>{link.username || link.platform}</span>
                 </a>
               ))}
@@ -145,29 +169,19 @@ const CreativeLayout: React.FC = () => {
         {/* Skills */}
         {visibleSections.skills && skills.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1">
+            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1 text-white">
               Skills
             </h3>
             
             <div className="space-y-3">
-              {/* Group skills by category */}
-              {Object.entries(
-                skills.reduce((categories: Record<string, typeof skills>, skill) => {
-                  const category = skill.category || 'Other';
-                  if (!categories[category]) {
-                    categories[category] = [];
-                  }
-                  categories[category].push(skill);
-                  return categories;
-                }, {})
-              ).map(([category, categorySkills]) => (
+              {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
                 <div key={category}>
-                  <h4 className="text-sm font-medium mb-2">{category}</h4>
+                  <h4 className="text-sm font-medium mb-2 text-white">{category}</h4>
                   <div className="flex flex-wrap gap-2">
                     {categorySkills.map((skill) => (
                       <div 
                         key={skill.id}
-                        className="px-2 py-1 bg-white/10 rounded-md text-xs"
+                        className="px-2 py-1 bg-white/10 rounded-md text-xs text-white"
                       >
                         {skill.name}
                       </div>
@@ -182,13 +196,13 @@ const CreativeLayout: React.FC = () => {
         {/* Languages */}
         {visibleSections.languages && languages.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1">
+            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1 text-white">
               Languages
             </h3>
             
             <div className="space-y-2">
               {languages.map((language) => (
-                <div key={language.id} className="flex justify-between items-center">
+                <div key={language.id} className="flex justify-between items-center text-white">
                   <span className="text-sm">{language.name}</span>
                   <div className="text-xs uppercase">{language.proficiency}</div>
                 </div>
@@ -200,15 +214,15 @@ const CreativeLayout: React.FC = () => {
         {/* Courses */}
         {visibleSections.courses && courses.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1">
+            <h3 className="text-lg font-semibold mb-3 border-b border-white/20 pb-1 text-white">
               Courses
             </h3>
             
             <div className="space-y-3 text-sm">
               {courses.map((course) => (
                 <div key={course.id}>
-                  <div className="font-medium">{course.name}</div>
-                  <div className="text-xs opacity-80">
+                  <div className="font-medium text-white">{course.name}</div>
+                  <div className="text-xs opacity-80 text-white">
                     {course.provider}
                     {course.date && ` • ${formatDate(course.date)}`}
                   </div>
@@ -220,7 +234,7 @@ const CreativeLayout: React.FC = () => {
       </div>
       
       {/* Main Content */}
-      <div className="md:w-2/3 print:w-2/3 p-8 print:p-4 bg-white text-gray-800">
+      <div className="md:w-2/3 print:w-2/3 p-8 print:p-4 text-gray-800">
         {/* About / Summary */}
         {visibleSections.about && about && (
           <section className="mb-8">
@@ -230,7 +244,7 @@ const CreativeLayout: React.FC = () => {
             >
               About Me
             </h3>
-            <p className="text-sm leading-relaxed">{about}</p>
+            <p className="text-sm leading-relaxed text-gray-700">{about}</p>
           </section>
         )}
         
@@ -252,9 +266,9 @@ const CreativeLayout: React.FC = () => {
                     style={{ backgroundColor: accentColor }}
                   ></div>
                   
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h4 className="font-bold text-md">{exp.role}</h4>
+                      <h4 className="font-bold text-md text-gray-800">{exp.role}</h4>
                       <div className="text-sm text-gray-600">{exp.company}</div>
                     </div>
                     <div className="text-xs text-gray-500 whitespace-nowrap">
@@ -266,7 +280,7 @@ const CreativeLayout: React.FC = () => {
                   {exp.responsibilities.length > 0 && (
                     <ul className="mt-2 space-y-1">
                       {exp.responsibilities.map((responsibility, index) => (
-                        <li key={index} className="text-sm flex">
+                        <li key={index} className="text-sm flex text-gray-700">
                           <ChevronRight size={14} className="mr-1 mt-0.5 shrink-0" style={{ color: accentColor }} />
                           <span>{responsibility}</span>
                         </li>
@@ -279,7 +293,7 @@ const CreativeLayout: React.FC = () => {
                       {exp.techUsed.map((tech, index) => (
                         <span 
                           key={index}
-                          className="text-xs px-2 py-0.5 rounded"
+                          className="text-xs px-2 py-0.5 rounded text-gray-700"
                           style={{ backgroundColor: `${accentColor}20` }}
                         >
                           {tech}
@@ -311,9 +325,9 @@ const CreativeLayout: React.FC = () => {
                     style={{ backgroundColor: accentColor }}
                   ></div>
                   
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h4 className="font-bold text-md">{project.title}</h4>
+                      <h4 className="font-bold text-md text-gray-800">{project.title}</h4>
                       {project.techUsed.length > 0 && (
                         <div className="text-xs text-gray-600">
                           {project.techUsed.join(' • ')}
@@ -328,7 +342,7 @@ const CreativeLayout: React.FC = () => {
                   </div>
                   
                   {project.description && (
-                    <p className="mt-1 text-sm">{project.description}</p>
+                    <p className="mt-1 text-sm text-gray-700">{project.description}</p>
                   )}
                   
                   <div className="mt-1 flex space-x-4 text-xs">
@@ -380,10 +394,10 @@ const CreativeLayout: React.FC = () => {
                     style={{ backgroundColor: accentColor }}
                   ></div>
                   
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h4 className="font-bold text-md">{edu.institution}</h4>
-                      <div className="text-sm">{edu.degree}</div>
+                      <h4 className="font-bold text-md text-gray-800">{edu.institution}</h4>
+                      <div className="text-sm text-gray-600">{edu.degree}</div>
                     </div>
                     <div className="text-xs text-gray-500 whitespace-nowrap">
                       {formatDate(edu.startDate)} – {edu.endDate ? formatDate(edu.endDate) : 'Present'}
@@ -392,9 +406,9 @@ const CreativeLayout: React.FC = () => {
                   </div>
                   
                   <div className="mt-1 text-sm">
-                    {edu.gpa && <span className="mr-3">GPA: {edu.gpa}</span>}
+                    {edu.gpa && <span className="mr-3 text-gray-700">GPA: {edu.gpa}</span>}
                     {edu.coursework && (
-                      <div className="text-xs mt-1">
+                      <div className="text-xs mt-1 text-gray-600">
                         <span className="font-medium">Coursework:</span> {edu.coursework}
                       </div>
                     )}
@@ -422,7 +436,7 @@ const CreativeLayout: React.FC = () => {
                   className="text-sm p-3 rounded"
                   style={{ backgroundColor: `${accentColor}10` }}
                 >
-                  <div className="font-bold">{achievement.title}</div>
+                  <div className="font-bold text-gray-800">{achievement.title}</div>
                   {achievement.date && <div className="text-xs text-gray-600">{formatDate(achievement.date)}</div>}
                   {achievement.description && <p className="mt-1 text-gray-700">{achievement.description}</p>}
                 </div>
@@ -444,8 +458,8 @@ const CreativeLayout: React.FC = () => {
             <div className="space-y-4">
               {publications.map((publication) => (
                 <div key={publication.id} className="text-sm">
-                  <div className="font-bold">{publication.title}</div>
-                  {publication.authors && <div className="text-xs italic">{publication.authors}</div>}
+                  <div className="font-bold text-gray-800">{publication.title}</div>
+                  {publication.authors && <div className="text-xs italic text-gray-600">{publication.authors}</div>}
                   <div className="text-xs text-gray-600">
                     {publication.journal}
                     {publication.date && ` • ${formatDate(publication.date)}`}

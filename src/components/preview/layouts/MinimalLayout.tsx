@@ -15,7 +15,8 @@ const MinimalLayout: React.FC = () => {
     languages, 
     publications,
     visibleSections,
-    accentColor
+    accentColor,
+    backgroundColor
   } = useResumeStore();
 
   const formatDate = (dateString: string) => {
@@ -27,8 +28,21 @@ const MinimalLayout: React.FC = () => {
     }).format(date);
   };
 
+  // Group skills by category
+  const skillsByCategory = skills.reduce((categories: Record<string, typeof skills>, skill) => {
+    const category = skill.category || 'Other';
+    if (!categories[category]) {
+      categories[category] = [];
+    }
+    categories[category].push(skill);
+    return categories;
+  }, {});
+
   return (
-    <div className="font-sans text-gray-800 p-12 print:p-6 max-w-4xl mx-auto">
+    <div 
+      className="font-sans text-gray-800 p-12 print:p-6 max-w-4xl mx-auto min-h-full"
+      style={{ backgroundColor }}
+    >
       {/* Header */}
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-light mb-1" style={{ color: accentColor }}>
@@ -38,7 +52,7 @@ const MinimalLayout: React.FC = () => {
           {personalInfo.title || 'Professional Title'}
         </h2>
         
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm">
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm text-gray-700">
           {personalInfo.email && (
             <div>{personalInfo.email}</div>
           )}
@@ -85,27 +99,34 @@ const MinimalLayout: React.FC = () => {
       {/* About / Summary */}
       {visibleSections.about && about && (
         <section className="mb-8">
-          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
             Profile
           </h3>
           <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
-          <p className="text-sm leading-relaxed text-center max-w-2xl mx-auto">{about}</p>
+          <p className="text-sm leading-relaxed text-center max-w-2xl mx-auto text-gray-700">{about}</p>
         </section>
       )}
       
       {/* Skills */}
       {visibleSections.skills && skills.length > 0 && (
         <section className="mb-8">
-          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
             Skills
           </h3>
           <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
-          <div className="text-sm text-center">
-            {skills.map((skill, index) => (
-              <React.Fragment key={skill.id}>
-                <span>{skill.name}</span>
-                {index < skills.length - 1 && <span className="mx-2">•</span>}
-              </React.Fragment>
+          <div className="space-y-3">
+            {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
+              <div key={category} className="text-center">
+                <h4 className="text-sm font-medium mb-2 text-gray-800">{category}</h4>
+                <div className="text-sm">
+                  {categorySkills.map((skill, index) => (
+                    <React.Fragment key={skill.id}>
+                      <span className="text-gray-700">{skill.name}</span>
+                      {index < categorySkills.length - 1 && <span className="mx-2 text-gray-500">•</span>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </section>
@@ -114,7 +135,7 @@ const MinimalLayout: React.FC = () => {
       {/* Experience */}
       {visibleSections.experience && experience.length > 0 && (
         <section className="mb-8">
-          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
             Experience
           </h3>
           <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
@@ -122,7 +143,7 @@ const MinimalLayout: React.FC = () => {
             {experience.map((exp) => (
               <div key={exp.id}>
                 <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-medium">{exp.role}</h4>
+                  <h4 className="font-medium text-gray-800">{exp.role}</h4>
                   <div className="text-sm text-gray-600">
                     {formatDate(exp.startDate)} – {exp.endDate ? formatDate(exp.endDate) : 'Present'}
                   </div>
@@ -133,7 +154,7 @@ const MinimalLayout: React.FC = () => {
                 </div>
                 
                 {exp.responsibilities.length > 0 && (
-                  <ul className="text-sm list-disc list-inside space-y-1 pl-2">
+                  <ul className="text-sm list-disc list-inside space-y-1 pl-2 text-gray-700">
                     {exp.responsibilities.map((responsibility, index) => (
                       <li key={index}>{responsibility}</li>
                     ))}
@@ -148,7 +169,7 @@ const MinimalLayout: React.FC = () => {
       {/* Education */}
       {visibleSections.education && education.length > 0 && (
         <section className="mb-8">
-          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
             Education
           </h3>
           <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
@@ -156,18 +177,18 @@ const MinimalLayout: React.FC = () => {
             {education.map((edu) => (
               <div key={edu.id}>
                 <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-medium">{edu.institution}</h4>
+                  <h4 className="font-medium text-gray-800">{edu.institution}</h4>
                   <div className="text-sm text-gray-600">
                     {formatDate(edu.startDate)} – {edu.endDate ? formatDate(edu.endDate) : 'Present'}
                   </div>
                 </div>
                 <div className="flex justify-between items-baseline mb-2">
-                  <div className="text-sm">{edu.degree}</div>
+                  <div className="text-sm text-gray-700">{edu.degree}</div>
                   <div className="text-sm text-gray-600">{edu.location}</div>
                 </div>
                 
                 {(edu.gpa || edu.coursework) && (
-                  <div className="text-sm">
+                  <div className="text-sm text-gray-700">
                     {edu.gpa && <span className="mr-4">GPA: {edu.gpa}</span>}
                     {edu.coursework && (
                       <span>Coursework: {edu.coursework}</span>
@@ -183,7 +204,7 @@ const MinimalLayout: React.FC = () => {
       {/* Projects */}
       {visibleSections.projects && projects.length > 0 && (
         <section className="mb-8">
-          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+          <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
             Projects
           </h3>
           <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
@@ -191,7 +212,7 @@ const MinimalLayout: React.FC = () => {
             {projects.map((project) => (
               <div key={project.id}>
                 <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-medium">{project.title}</h4>
+                  <h4 className="font-medium text-gray-800">{project.title}</h4>
                   {(project.startDate || project.endDate) && (
                     <div className="text-sm text-gray-600">
                       {formatDate(project.startDate)} – {project.endDate ? formatDate(project.endDate) : 'Present'}
@@ -206,7 +227,7 @@ const MinimalLayout: React.FC = () => {
                 )}
                 
                 {project.description && (
-                  <p className="text-sm mb-1">{project.description}</p>
+                  <p className="text-sm mb-1 text-gray-700">{project.description}</p>
                 )}
                 
                 <div className="text-sm">
@@ -244,14 +265,14 @@ const MinimalLayout: React.FC = () => {
         {/* Achievements */}
         {visibleSections.achievements && achievements.length > 0 && (
           <section>
-            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
               Achievements
             </h3>
             <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
             <ul className="space-y-2">
               {achievements.map((achievement) => (
                 <li key={achievement.id} className="text-sm">
-                  <span className="font-medium">{achievement.title}</span>
+                  <span className="font-medium text-gray-800">{achievement.title}</span>
                   {achievement.date && <span className="text-gray-600 ml-2">({formatDate(achievement.date)})</span>}
                 </li>
               ))}
@@ -262,13 +283,13 @@ const MinimalLayout: React.FC = () => {
         {/* Languages */}
         {visibleSections.languages && languages.length > 0 && (
           <section>
-            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
               Languages
             </h3>
             <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
             <ul className="space-y-1">
               {languages.map((language) => (
-                <li key={language.id} className="text-sm">
+                <li key={language.id} className="text-sm text-gray-700">
                   <span className="font-medium">{language.name}:</span> {language.proficiency}
                 </li>
               ))}
@@ -279,14 +300,14 @@ const MinimalLayout: React.FC = () => {
         {/* Courses */}
         {visibleSections.courses && courses.length > 0 && (
           <section>
-            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
               Courses
             </h3>
             <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
             <ul className="space-y-2">
               {courses.map((course) => (
                 <li key={course.id} className="text-sm">
-                  <div className="font-medium">{course.name}</div>
+                  <div className="font-medium text-gray-800">{course.name}</div>
                   <div className="text-gray-600">
                     {course.provider}
                     {course.date && ` • ${formatDate(course.date)}`}
@@ -300,14 +321,14 @@ const MinimalLayout: React.FC = () => {
         {/* Publications */}
         {visibleSections.publications && publications.length > 0 && (
           <section>
-            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide">
+            <h3 className="text-base font-normal mb-2 text-center uppercase tracking-wide text-gray-800">
               Publications
             </h3>
             <div className="w-full h-px mb-4" style={{ backgroundColor: accentColor }}></div>
             <ul className="space-y-3">
               {publications.map((publication) => (
                 <li key={publication.id} className="text-sm">
-                  <div className="font-medium">{publication.title}</div>
+                  <div className="font-medium text-gray-800">{publication.title}</div>
                   <div className="text-gray-600">
                     {publication.journal}
                     {publication.date && ` • ${formatDate(publication.date)}`}
